@@ -2,60 +2,382 @@
 {% load static %}
 
 {% block content %}
-<!-- Upper Section -->
-<div class="bg-gray-50 p-6 rounded-lg shadow-md flex justify-between items-center">
-    <div>
-        <h2 class="text-2xl font-bold text-gray-800">Welcome, <span class="text-green-600">User</span> 👋</h2>
-        <p class="text-gray-600 mt-2">Here's a quick look at your budget status today.</p>
-    </div>
-    <div class="flex space-x-3">
-        <a href="{% url 'new_income' %}" class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600">+ New Income</a>
-        <a href="{% url 'new_expense' %}" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600">+ New Expense</a>
-
-        <button class="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600">+ New Recurring</button>
+<!-- Header Section -->
+<div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+            <h1 class="text-3xl font-bold text-slate-800">
+                Welcome, <span class="text-orange-400">{{ request.user.username }}</span> 👋
+            </h1>
+            <p class="text-slate-500 mt-2">Here's a quick look at your budget status today.</p>
+        </div>
+        
+        <div class="flex flex-wrap gap-3">
+            <a href="{% url 'new_income' %}" class="bg-orange-400 hover:bg-orange-500 text-white px-4 py-2 rounded-lg shadow-sm transition-all duration-200 flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                </svg>
+                Income
+            </a>
+            <a href="{% url 'new_expense' %}" class="bg-slate-800 hover:bg-slate-900 text-white px-4 py-2 rounded-lg shadow-sm transition-all duration-200 flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                </svg>
+                Expense
+            </a>
+            <a href="{% url 'budget' %}" class="bg-gray-100 hover:bg-gray-200 text-slate-800 px-4 py-2 rounded-lg shadow-sm transition-all duration-200 flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                </svg>
+                Recurring
+            </a>
+        </div>
     </div>
 </div>
 
-<!-- Budget Summary -->
-<div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
-    <div class="bg-white p-6 rounded-lg shadow-md text-center">
-        <h3 class="text-xl font-semibold text-blue-600">Remaining</h3>
-        <p class="text-2xl font-bold text-gray-800">₹ {{ remaining }}</p>
-        <p class="text-gray-600 text-sm">All time</p>
+<!-- Stats Cards -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+    <div class="bg-slate-800 p-6 rounded-xl shadow-sm text-center text-white border border-slate-700 hover:shadow-md transition-all duration-200">
+        <div class="flex items-center justify-center mb-3">
+            <svg class="w-6 h-6 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+            </svg>
+        </div>
+        <h3 class="text-xl font-semibold text-orange-400 mb-2">Remaining</h3>
+        <p class="text-3xl font-bold">₹ {{ remaining|floatformat:0 }}</p>
+        <p class="text-slate-400 text-sm mt-2">All time</p>
     </div>
-    <div class="bg-white p-6 rounded-lg shadow-md text-center">
-        <h3 class="text-xl font-semibold text-green-600">Income</h3>
-        <p class="text-2xl font-bold text-gray-800">₹ {{ total_income }}</p>
-        <p class="text-gray-600 text-sm">All time</p>
+
+    <div class="bg-white p-6 rounded-xl shadow-sm text-center border border-slate-200 hover:shadow-md transition-all duration-200">
+        <div class="flex items-center justify-center mb-3">
+            <svg class="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+            </svg>
+        </div>
+        <h3 class="text-xl font-semibold text-slate-800 mb-2">Income</h3>
+        <p class="text-3xl font-bold text-slate-800">₹ {{ total_income|floatformat:0 }}</p>
+        <p class="text-slate-500 text-sm mt-2">All time</p>
     </div>
-    <div class="bg-white p-6 rounded-lg shadow-md text-center">
-        <h3 class="text-xl font-semibold text-red-600">Expenses</h3>
-        <p class="text-2xl font-bold text-gray-800">₹ {{ total_expense }}</p>
-        <p class="text-gray-600 text-sm">All time</p>
+
+    <div class="bg-white p-6 rounded-xl shadow-sm text-center border border-slate-200 hover:shadow-md transition-all duration-200">
+        <div class="flex items-center justify-center mb-3">
+            <svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"></path>
+            </svg>
+        </div>
+        <h3 class="text-xl font-semibold text-slate-800 mb-2">Expenses</h3>
+        <p class="text-3xl font-bold text-slate-800">₹ {{ total_expense|floatformat:0 }}</p>
+        <p class="text-slate-500 text-sm mt-2">All time</p>
     </div>
 </div>
 
 <!-- Charts Section -->
-<div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-    <div class="bg-white p-6 rounded-lg shadow-md">
-        <h3 class="text-xl font-semibold text-gray-800">Transactions</h3>
-        <canvas id="transactionChart"></canvas>
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+    <!-- Expense Statistics Bar Chart -->
+    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+        <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center gap-2">
+                <svg class="w-6 h-6 text-slate-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                </svg>
+                <h2 class="text-xl font-semibold text-slate-800">Expense Statistics</h2>
+            </div>
+            
+            <div class="flex bg-gray-100 rounded-lg p-1">
+                <button onclick="changeChartPeriod('daily')" id="daily-btn" class="px-3 py-1 rounded-md text-sm font-medium transition-all duration-200 bg-slate-800 text-white shadow-sm">
+                    Daily
+                </button>
+                <button onclick="changeChartPeriod('monthly')" id="monthly-btn" class="px-3 py-1 rounded-md text-sm font-medium transition-all duration-200 text-slate-600 hover:text-slate-800">
+                    Monthly
+                </button>
+                <button onclick="changeChartPeriod('yearly')" id="yearly-btn" class="px-3 py-1 rounded-md text-sm font-medium transition-all duration-200 text-slate-600 hover:text-slate-800">
+                    Yearly
+                </button>
+            </div>
+        </div>
+        
+        <div class="h-80">
+            <canvas id="expenseBarChart"></canvas>
+        </div>
     </div>
-    <div class="bg-white p-6 rounded-lg shadow-md">
-        <h3 class="text-xl font-semibold text-gray-800">Expense Distribution</h3>
-        <canvas id="myChart" width="500" height="500"></canvas>
 
+    <!-- Expense Distribution Pie Chart -->
+    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+        <h2 class="text-xl font-semibold text-slate-800 mb-6">Expense Distribution</h2>
+        <div class="h-80">
+            <canvas id="expensePieChart"></canvas>
+        </div>
     </div>
 </div>
+
+<!-- Budget Progress Section -->
+<div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 mt-6">
+    <div class="flex items-center justify-between mb-6">
+        <h2 class="text-xl font-semibold text-slate-800">Budget Progress</h2>
+        <a href="{% url 'budget' %}" class="text-orange-400 hover:text-orange-500 text-sm font-medium transition-colors duration-200">
+            View All Budgets →
+        </a>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {% for budget in budgets %}
+        <div class="bg-gray-50 p-4 rounded-lg hover:shadow-sm transition-all duration-200">
+            <div class="flex justify-between items-center mb-3">
+                <h3 class="font-semibold text-slate-800">{{ budget.name }}</h3>
+                <span class="text-sm text-slate-600">₹{{ budget.amount|floatformat:0 }}</span>
+            </div>
+            
+            <div class="w-full bg-gray-200 h-2 rounded-full overflow-hidden mb-2">
+                <div class="h-full rounded-full transition-all duration-300 {% if budget.percentage_used > 80 %}bg-red-500{% elif budget.percentage_used > 60 %}bg-yellow-500{% else %}bg-green-500{% endif %}"
+                     style="width: {{ budget.percentage_used }}%;"></div>
+            </div>
+            
+            <div class="flex justify-between items-center text-sm">
+                <span class="text-slate-600">{{ budget.percentage_used }}% used</span>
+                <span class="text-slate-800 font-medium">₹{{ budget.used|floatformat:0 }}</span>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-span-full text-center py-8">
+            <p class="text-slate-500">No budgets found. Create your first budget to get started!</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Hidden data containers for JavaScript -->
+<div id="chart-data" style="display: none;"
+     data-pie-labels='{{ labels }}'
+     data-pie-values='{{ values }}'
+     data-daily-labels='{{ daily_labels }}'
+     data-daily-data='{{ daily_data }}'
+     data-monthly-labels='{{ monthly_labels }}'
+     data-monthly-data='{{ monthly_data }}'
+     data-yearly-labels='{{ yearly_labels }}'
+     data-yearly-data='{{ yearly_data }}'>
+</div>
+
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- Dashboard JavaScript -->
 <script>
-    var labels = {{ labels|safe }}
-    var values = {{ values|safe }};
+// Chart configuration with colorful but tasteful colors
+const chartColors = {
+    primary: '#1e293b',        // slate-800
+    secondary: '#fb923c',      // orange-400
+    bars: '#fb923c',           // orange-400 for bars
+    pieColors: [
+        '#3b82f6',             // blue-500
+        '#10b981',             // emerald-500
+        '#f59e0b',             // amber-500
+        '#ef4444',             // red-500
+        '#8b5cf6',             // violet-500
+        '#06b6d4',             // cyan-500
+        '#84cc16',             // lime-500
+        '#f97316'              // orange-500
+    ]
+};
+
+// Global chart options
+const globalChartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+        tooltip: {
+            backgroundColor: 'rgba(30, 41, 59, 0.9)',
+            titleColor: '#ffffff',
+            bodyColor: '#ffffff',
+            borderColor: chartColors.secondary,
+            borderWidth: 1,
+            cornerRadius: 8,
+            displayColors: false
+        }
+    }
+};
+
+// Initialize charts
+let expenseBarChart;
+let expensePieChart;
+
+// Get real data from Django
+const chartDataContainer = document.getElementById('chart-data');
+const realChartData = {
+    daily: {
+        labels: JSON.parse(chartDataContainer.dataset.dailyLabels || '[]'),
+        data: JSON.parse(chartDataContainer.dataset.dailyData || '[]')
+    },
+    monthly: {
+        labels: JSON.parse(chartDataContainer.dataset.monthlyLabels || '[]'),
+        data: JSON.parse(chartDataContainer.dataset.monthlyData || '[]')
+    },
+    yearly: {
+        labels: JSON.parse(chartDataContainer.dataset.yearlyLabels || '[]'),
+        data: JSON.parse(chartDataContainer.dataset.yearlyData || '[]')
+    }
+};
+
+// Initialize Bar Chart
+function initBarChart(period = 'daily') {
+    const ctx = document.getElementById('expenseBarChart').getContext('2d');
+    
+    if (expenseBarChart) {
+        expenseBarChart.destroy();
+    }
+    
+    const currentData = realChartData[period];
+    
+    expenseBarChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: currentData.labels,
+            datasets: [{
+                label: `${period.charAt(0).toUpperCase() + period.slice(1)} Expenses (₹)`,
+                data: currentData.data,
+                backgroundColor: chartColors.bars + '90',
+                borderColor: chartColors.bars,
+                borderWidth: 2,
+                borderRadius: 8,
+                borderSkipped: false,
+            }]
+        },
+        options: {
+            ...globalChartOptions,
+            plugins: {
+                ...globalChartOptions.plugins,
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: 'rgba(148, 163, 184, 0.2)'
+                    },
+                    ticks: {
+                        color: '#475569',
+                        callback: function(value) {
+                            return '₹' + value.toLocaleString();
+                        }
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false
+                    },
+                    ticks: {
+                        color: '#475569'
+                    }
+                }
+            }
+        }
+    });
+}
+
+// Initialize Pie Chart
+function initPieChart() {
+    const ctx = document.getElementById('expensePieChart').getContext('2d');
+    
+    // Get real data from Django
+    let labels, values;
+    
+    try {
+        labels = JSON.parse(chartDataContainer.dataset.pieLabels || '[]');
+        values = JSON.parse(chartDataContainer.dataset.pieValues || '[]');
+    } catch (e) {
+        // Fallback data if no real data available
+        labels = ['No Data'];
+        values = [0];
+    }
+    
+    // Handle empty data
+    if (labels.length === 0 || values.length === 0) {
+        labels = ['No Expenses Yet'];
+        values = [1];
+    }
+    
+    expensePieChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: labels,
+            datasets: [{
+                data: values,
+                backgroundColor: chartColors.pieColors,
+                borderWidth: 3,
+                borderColor: '#ffffff',
+                hoverOffset: 12
+            }]
+        },
+        options: {
+            ...globalChartOptions,
+            plugins: {
+                ...globalChartOptions.plugins,
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        padding: 20,
+                        usePointStyle: true,
+                        pointStyle: 'circle',
+                        font: {
+                            size: 12
+                        },
+                        color: '#475569'
+                    }
+                },
+                tooltip: {
+                    ...globalChartOptions.plugins.tooltip,
+                    callbacks: {
+                        label: function(context) {
+                            const value = context.raw;
+                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                            const percentage = ((value / total) * 100).toFixed(1);
+                            return `₹${value.toLocaleString()} (${percentage}%)`;
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+// Change chart period function
+function changeChartPeriod(period) {
+    // Update button states
+    document.querySelectorAll('[id$="-btn"]').forEach(btn => {
+        btn.className = 'px-3 py-1 rounded-md text-sm font-medium transition-all duration-200 text-slate-600 hover:text-slate-800';
+    });
+    
+    document.getElementById(period + '-btn').className = 'px-3 py-1 rounded-md text-sm font-medium transition-all duration-200 bg-slate-800 text-white shadow-sm';
+    
+    // Update chart
+    initBarChart(period);
+}
+
+// Initialize charts when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    initBarChart('daily');
+    initPieChart();
+});
 </script>
 
-<script src="{% static 'js/chart.js' %}"></script>
- 
+<!-- SweetAlert for messages -->
+{% if messages %}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    {% for message in messages %}
+        Swal.fire({
+            icon: "{% if message.tags == 'success' %}success{% elif message.tags == 'error' %}error{% else %}info{% endif %}",
+            title: "{{ message|escapejs }}",
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true
+        });
+    {% endfor %}
+</script>
+{% endif %}
 
-
-
- 
+{{ redirect_to_login_immediately }}
 {% endblock %}

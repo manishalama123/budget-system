@@ -8,28 +8,98 @@
         
         <div class="mb-4">
             <label class="block text-gray-700">Amount</label>
-            <input type="number" name="amount" required class="w-full p-2 border rounded-lg">
+            <input type="number" name="amount"  class="w-full p-2 border rounded-lg" required>
         </div>
         
         <div class="mb-4">
             <label class="block text-gray-700">Description</label>
-            <input type="text" name="description" class="w-full p-2 border rounded-lg">
+            <input type="text" name="description" class="w-full p-2 border rounded-lg" required>
         </div>
         <div class="mb-4">
             <label class="block text-gray-700">Category</label>
             <select name="category" required class="w-full p-2 border rounded-lg">
-                <option value="salary">Salary</option>
-                <option value="side">Side Hustle</option>
-                <option value="gift">Gift</option>
-                
+                <option value="Employment">Employment</option>
+                <option value="SideHustle">SideHustle</option> 
+                <option value="Dividend">Dividends</option>
+                <option value="Others">Others</option>
             </select>
         </div>
         <div class="mb-4">
             <label class="block text-gray-700">Date</label>
-            <input type="date" name="date" required class="w-full p-2 border rounded-lg">
+            <input type="date" name="date" required class="w-full p-2 border rounded-lg" id="date-input">
         </div>
 
         <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded-lg w-full hover:bg-green-600">Add Income</button>
     </form>
 </div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    // Date validation and default setting
+    
+    
+    document.addEventListener('DOMContentLoaded', function () {
+        const dateInput = document.getElementById('date-input');
+        const today = new Date().toISOString().split('T')[0];
+        dateInput.setAttribute('max', today);  // Prevent future date
+        if (!dateInput.value) {
+            dateInput.value = today;  // Set today's date by default
+        }
+    });
+    
+
+    $(document).ready(function() {
+        // Trigger AJAX when typing in income description field
+        $('input[name="description"]').on('input', function() {
+          let description = $(this).val();  // Get the input text
+    
+          $.ajax({
+            url: '{% url "predict_income_category_view" %}',  // Django URL for income prediction
+            data: {
+              'description': description
+            },
+            success: function(response) {
+              let predictedCategory = response.category.trim().toLowerCase(); // normalize
+              console.log("Predicted income category:", predictedCategory);
+            
+              let matchedValue = null;
+            
+              $('select[name="category"] option').each(function() {
+                let optionVal = $(this).val().trim().toLowerCase();
+                if (optionVal === predictedCategory) {
+                  matchedValue = $(this).val();  // Use original case
+                  return false;
+                }
+              });
+            
+              if (matchedValue) {
+                $('select[name="category"]').val(matchedValue);
+                console.log("✅ Income category set to:", matchedValue);
+              } else {
+                console.log("❌ No matching category found for:", predictedCategory);
+              }
+            }
+          });
+        });
+    
+        // Description validation
+        $('form').on('submit', function(e) {
+          let description = $('#description-input').val().trim();
+          let words = description.split(/\s+/);
+          if (words.length < 2) {
+            e.preventDefault();
+            $('#description-error').removeClass('hidden');
+          } else {
+            $('#description-error').addClass('hidden');
+          }
+        });
+    
+        // Date validation and default setting
+        let today = new Date().toISOString().split('T')[0];
+        $('#date-input').attr('max', today);
+        if (!$('#date-input').val()) {
+          $('#date-input').val(today);
+        }
+    });
+</script>
 {% endblock %}

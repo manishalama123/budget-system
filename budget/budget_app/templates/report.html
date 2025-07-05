@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container mx-auto px-4 py-6">
+  <h1 class="text-3xl font-bold text-slate-800 mb-6">📊 Monthly Report</h1>
+
+  <!-- Month Selector -->
+  <form method="GET" class="mb-6 flex items-center gap-4">
+    <label for="month" class="font-semibold text-slate-800">Select Month:</label>
+    <input type="month" id="month" name="month" value="{{ selected_month }}" class="border border-slate-300 px-3 py-2 rounded">
+    <button type="submit" class="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600 transition">View</button>
+  </form>
+
+  <!-- Budget Overview Cards -->
+  <section class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+    <div class="bg-slate-100 p-4 rounded-xl shadow border-l-4 border-orange-500">
+      <h2 class="text-lg font-medium text-slate-700">Total Budget</h2>
+      <p class="text-2xl font-bold text-slate-800 mt-2">Rs. {{ total_budget }}</p>
+    </div>
+    <div class="bg-slate-100 p-4 rounded-xl shadow border-l-4 border-red-400">
+      <h2 class="text-lg font-medium text-slate-700">Total Expenses</h2>
+      <p class="text-2xl font-bold text-slate-800 mt-2">Rs. {{ total_expense }}</p>
+    </div>
+    <div class="bg-slate-100 p-4 rounded-xl shadow border-l-4 border-green-500">
+      <h2 class="text-lg font-medium text-slate-700">Remaining</h2>
+      <p class="text-2xl font-bold text-slate-800 mt-2">Rs. {{ remaining }}</p>
+    </div>
+  </section>
+
+  <!-- Charts Section -->
+<section class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-white p-6 rounded-xl shadow mb-8">
+  <!-- Pie Chart -->
+  <div>
+    <h2 class="text-xl font-semibold text-slate-800 mb-4">Expenses by Category</h2>
+    <canvas id="categoryChart" class="w-full h-64"></canvas>
+  </div>
+
+  <!-- Bar Chart -->
+  <div>
+    <h2 class="text-xl font-semibold text-slate-800 mb-4">Income vs Expense</h2>
+    <canvas id="comparisonChart" class="w-full h-64"></canvas>
+  </div>
+</section>
+
+
+  <!-- Expenses Table -->
+  <section class="bg-white p-6 rounded-xl shadow">
+    <h2 class="text-xl font-semibold text-slate-800 mb-4">Expense Details</h2>
+    <div class="overflow-x-auto">
+      <table class="w-full table-auto text-slate-700">
+        <thead>
+          <tr class="bg-slate-200 text-slate-800">
+            <th class="p-2">Date</th>
+            <th class="p-2">Category</th>
+            <th class="p-2">Amount</th>
+            <th class="p-2">Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for expense in monthly_expenses %}
+          <tr class="border-b hover:bg-slate-50">
+            <td class="p-2">{{ expense.date }}</td>
+            <td class="p-2">{{ expense.category }}</td>
+            <td class="p-2">Rs. {{ expense.amount }}</td>
+            <td class="p-2">{{ expense.description }}</td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="4" class="text-center text-slate-500 py-4">No expenses this month.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  // Pie Chart for Category-wise Expense
+  const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+  new Chart(categoryCtx, {
+    type: 'pie',
+    data: {
+      labels: {{ category_labels|safe }},
+      datasets: [{
+        label: 'Expenses',
+        data: {{ category_data|safe }},
+        backgroundColor: ['#f97316', '#64748b', '#ef4444', '#10b981', '#3b82f6', '#a855f7', '#facc15'],
+        borderWidth: 1
+      }]
+    }
+  });
+
+  // Bar Chart for Income vs Expense
+  const comparisonCtx = document.getElementById('comparisonChart').getContext('2d');
+  new Chart(comparisonCtx, {
+    type: 'bar',
+    data: {
+      labels: ['Income', 'Expenses'],
+      datasets: [{
+        label: 'Amount (Rs.)',
+        data: [{{ total_income }}, {{ total_expense }}],
+        backgroundColor: ['#10b981', '#ef4444'],
+        borderRadius: 6,
+        barThickness: 40
+      }]
+    },
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: {
+            callback: function(value) {
+              return 'Rs. ' + value;
+            }
+          }
+        }
+      }
+    }
+  });
+</script>
+
+
+{% endblock %}

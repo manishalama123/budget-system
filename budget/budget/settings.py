@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
-
+import os 
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     'tailwind',
     "theme",  
     "django_browser_reload",
+    'widget_tweaks',
+    'django_auto_logout',
 ]
 TAILWIND_APP_NAME = "theme"
 INTERNAL_IPS = [
@@ -60,6 +62,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     "django_browser_reload.middleware.BrowserReloadMiddleware",
+
+    'django_auto_logout.middleware.auto_logout', #django-auto-logout (1)
 ]
 
 ROOT_URLCONF = 'budget.urls'
@@ -67,7 +71,7 @@ ROOT_URLCONF = 'budget.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR/ 'templates'],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -75,6 +79,9 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+
+                # django-auto-logout (2)
+                'django_auto_logout.context_processors.auto_logout_client',
             ],
         },
     },
@@ -136,9 +143,22 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # import os
 # STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-import os 
+
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# login huda direct dashboard ma redirect hunxa
+LOGIN_REDIRECT_URL = '/'
+LOGIN_URL = '/login/'  # not just 'login'
+
+
+
+# Session expire upon closing browser
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+AUTO_LOGOUT = {'SESSION_TIME': 600, 
+               'REDIRECT_TO_LOGIN_IMMEDIATELY': True,
+                'MESSAGE': 'The session has expired. Please login again to continue.',}

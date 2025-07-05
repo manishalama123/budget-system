@@ -7,7 +7,7 @@
         {% csrf_token %}
         <div class="mb-4">
             <label class="block text-gray-700">Amount</label>
-            <input type="number" name="amount" required class="w-full p-2 border rounded-lg">
+            <input type="number" name="amount"  class="w-full p-2 border rounded-lg" required>
         </div>
         <div class="mb-4">
           <label class="block text-gray-700">Description</label>
@@ -18,12 +18,15 @@
         <div class="mb-4">
             <label class="block text-gray-700">Category</label>
             <select name="category" required class="w-full p-2 border rounded-lg">
-                <option value="food">Food</option>
-                <option value="transportation">Transport</option>
-                <option value="shopping">Shopping</option>
-                <option value="bills">Bills</option>
-                <option value="other">Other</option>
-            </select>
+              <option value="Food">Food</option>
+              <option value="Transport">Transport</option>
+              <option value="Bills">Bills</option>
+              <option value="Entertainment">Entertainment</option>
+              <option value="Health">Health</option>
+              <option value="Utility">Utility</option>
+              <option value="Other">Other</option>
+          </select>
+          
         </div>
         <div class="mb-4">
           <label class="block text-gray-700">Date</label>
@@ -44,17 +47,40 @@
 
       // Make an AJAX GET request to fetch the predicted category
       $.ajax({
-        url: '{% url "predict_category" %}',  // Django URL for prediction
+        url: '{% url "predict_category_view" %}',  // Django URL for prediction
         data: {
           'description': description  // Send description as a query parameter
         },
-        success: function(response) {
+        {% comment %} success: function(response) {
           let predictedCategory = response.category;
+          console.log("Predicted:", predictedCategory); // Add this
           if (predictedCategory) {
             // Update the category dropdown with the predicted category
             $('select[name="category"]').val(predictedCategory);
           }
+        } {% endcomment %}
+        success: function(response) {
+          let predictedCategory = response.category.trim().toLowerCase(); // normalize model output
+          console.log("Predicted from model:", predictedCategory);
+        
+          let matchedValue = null;
+        
+          $('select[name="category"] option').each(function() {
+            let optionVal = $(this).val().trim().toLowerCase();  // normalize dropdown values
+            if (optionVal === predictedCategory) {
+              matchedValue = $(this).val();  // use original case for selection
+              return false;  // break loop
+            }
+          });
+        
+          if (matchedValue) {
+            $('select[name="category"]').val(matchedValue);  // set it using original value
+            console.log("✅ Category set to:", matchedValue);
+          } else {
+            console.log("❌ No matching category found for:", predictedCategory);
+          }
         }
+        
       });
     });
     // Description validation

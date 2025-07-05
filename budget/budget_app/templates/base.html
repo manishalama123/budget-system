@@ -9,62 +9,69 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
-<body class="bg-gray-100">
+<body class="bg-gray-100 text-gray-800 h-screen overflow-hidden">
     <div class="flex h-screen">
         <!-- Sidebar -->
-        <aside x-data="{ expanded: false }" 
-       :class="expanded ? 'w-64' : 'w-16'" 
-       class="bg-white shadow-md h-screen transition-all duration-300 p-4 flex flex-col">
+        <aside class="bg-slate-800 text-white shadow-md h-screen w-64 p-4 flex flex-col flex-shrink-0 overflow-y-auto">
+            <!-- Logo -->
+            <div class="text-2xl font-semibold text-center mb-8 text-orange-400">
+                LOGO
+            </div>
+            <!-- Navigation Links -->
+            <nav class="mt-6 space-y-4">
+                <!-- Link to Dashboard -->
+                <a href="{% url 'dashboard' %}" class="flex items-center space-x-4 hover:text-orange-400 transition-colors">
+                    <i class="fas fa-home text-lg"></i>
+                    <span class="block">Dashboard</span>
+                </a>
 
-    <!-- Toggle Button -->
-    <button @click="expanded = !expanded" class="mb-4 text-gray-700 focus:outline-none">
-        <i class="fas fa-bars text-2xl"></i>
-    </button>
+                <!-- Link to History -->
+                <a href="{% url 'history' %}" class="flex items-center space-x-4 hover:text-orange-400 transition-colors">
+                    <i class="fas fa-history text-lg"></i>
+                    <span class="block">History</span>
+                </a>
 
-    <!-- Navigation Links -->
-    <nav class="mt-6 space-y-4">
-        <!-- Link to Dashboard -->
-        <a href="{% url 'dashboard' %}" class="flex items-center space-x-4 text-gray-700 hover:text-green-500">
-            <i class="fas fa-home text-lg"></i>
-            <span :class="expanded ? 'block' : 'hidden'" class="transition-all duration-300">Dashboard</span>
-        </a>
+                <!-- Link to Budget -->
+                <a href="{% url 'budget' %}" class="flex items-center space-x-4 hover:text-orange-400 transition-colors">
+                    <i class="fas fa-wallet text-lg"></i>
+                    <span class="block">Budget</span>
+                </a>
 
-        <!-- Link to History -->
-        <a href="{% url 'history' %}" class="flex items-center space-x-4 text-gray-700 hover:text-green-500">
-            <i class="fas fa-history text-lg"></i>
-            <span :class="expanded ? 'block' : 'hidden'" class="transition-all duration-300">History</span>
-        </a>
+                <a href="{% url 'report' %}" class="flex items-center space-x-4 hover:text-orange-400 transition-colors">
+                    <i class="fas fa-wallet text-lg"></i>
+                    <span class="block">Report</span>
+                </a>
+            </nav>
+        </aside>
 
-        <!-- Link to Budget -->
-        <a href="{% url 'budget' %}" class="flex items-center space-x-4 text-gray-700 hover:text-green-500">
-            <i class="fas fa-wallet text-lg"></i>
-            <span :class="expanded ? 'block' : 'hidden'" class="transition-all duration-300">Budget</span>
-        </a>
-
-        
-    </nav>
-
-</aside>
-
-
-
-    <!-- Main Content -->
-    <main class="flex-1 p-6">
-        {% block content %}
-        {% endblock %}
-    </main>
+        <!-- Main Content -->
+        <main class="flex-1 overflow-y-auto h-full p-6 bg-gray-50 rounded-tl-3xl shadow-inner">
+            {% block content %}
+            {% endblock %}
+        </main>
     </div>
-
+    <!-- SweetAlert2 CDN -->
+    {% if messages %}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        function toggleSidebar() {
-            const sidebar = document.getElementById("sidebar");
-            sidebar.classList.toggle("w-20");
-            sidebar.classList.toggle("w-64");
-            document.querySelectorAll(".sidebar-text").forEach(el => el.classList.toggle("hidden"));
-        }
-    </script>
+        {% for message in messages %}
+            Swal.fire({
+                icon: "{% if message.tags == 'success' %}success{% elif message.tags == 'error' %}error{% else %}info{% endif %}",
+                title: "{{ message|escapejs }}",
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true
+            });
+        {% endfor %}
+</script>
+{% endif %}
+
+
 </body>
 </html>
