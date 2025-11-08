@@ -8,7 +8,7 @@ It helps users manage their income, expenses, and view visual summaries using **
 ## 🚀 Tech Stack
 
 **Frontend:**  
-- HTML, CSS, JavaScript  
+- HTML, TailwindCSS, JavaScript  
 - Chart.js (for monthly, weekly, and yearly expense visualization)  
 
 **Backend:**  
@@ -24,6 +24,8 @@ It helps users manage their income, expenses, and view visual summaries using **
 - Set monthly budgets
 - View total balance, savings, and spending overview  
 - Interactive charts for expense tracking (Chart.js)  
-- Simple and responsive design  
+- Simple and responsive design
+- Multinomial naive bayes for category classification
+- Linear Regression algorithm for predecting next month's expenses
 
 ---
