@@ -13,7 +13,6 @@ It helps users manage their income, expenses, and view visual summaries using **
 
 **Backend:**  
 - Django  
-- Django REST Framework (optional)  
 - SQLite  
 
 ---
